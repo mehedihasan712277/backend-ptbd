@@ -10,7 +10,7 @@ app.use(express.json());
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aunadi8.mongodb.net/?retryWrites=true&w=majority`;
 
 
@@ -37,6 +37,18 @@ async function run() {
             res.send(result);
         })
 
+        app.post("/data", async (req, res) => {
+            const data = req.body;
+            const result = await database.insertOne(data);
+            res.send(result);
+        })
+
+        app.delete("/data/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await database.deleteOne(query);
+            res.send(result);
+        })
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
